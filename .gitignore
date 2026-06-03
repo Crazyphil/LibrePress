@@ -37,6 +37,8 @@ $RECYCLE.BIN/
 
 # IntelliJ build output
 out/
+bin/
+.settings/
 
 ### Gradle
 .gradle
