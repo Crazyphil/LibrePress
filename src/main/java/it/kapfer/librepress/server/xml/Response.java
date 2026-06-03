@@ -15,6 +15,7 @@ import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty;
         @Type(EmptyResponse.class),
         @Type(ErrorResponse.class),
         @Type(GetClientListResponse.class),
+        @Type(GetMessagesResponse.class),
         @Type(GetServicesResponse.class),
         @Type(RegisterClientResponse.class)
 })
