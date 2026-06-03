@@ -64,4 +64,8 @@ gradle-app.setting
 .classpath
 
 ### Project-specific ignores
+# Secret files never to be committed
+src/test/resources/it/kapfer/librepress/drm/*.certificate
+src/test/resources/it/kapfer/librepress/pdf/*.pdn
+src/test/resources/it/kapfer/librepress/pdf/*.properties
 ndsecret.bin
