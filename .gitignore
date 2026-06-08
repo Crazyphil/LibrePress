@@ -68,4 +68,5 @@ gradle-app.setting
 src/test/resources/it/kapfer/librepress/drm/*.certificate
 src/test/resources/it/kapfer/librepress/pdf/*.pdn
 src/test/resources/it/kapfer/librepress/pdf/*.properties
+src/test/resources/it/kapfer/librepress/integration/credentials.secrets
 ndsecret.bin
