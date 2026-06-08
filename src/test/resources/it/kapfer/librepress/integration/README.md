@@ -29,3 +29,38 @@ Required properties:
 | `password`        | `CREDENTIALS_PASSWORD`         | Password of the account to authenticate to                     |
 | `activationToken` | `CREDENTIALS_ACTIVATION_TOKEN` | Activation token returned by the server on device registration |
 | `clientId`        | `CREDENTIALS_CLIENT_ID`        | Client ID used by the client to register the device            |
+
+## `.activation` files
+
+The `.activation` files contain captured XML activation responses from the NewspaperDirect content activation service. The integration test serves this file as
+the HTTP response body and verifies that `ActivationService` maps it to the expected `NewspaperIssue` values.
+
+## `.properties` files
+
+Each `.activation` file must have a matching Java properties file with the same prefix. The test loads this file to create the device registration and to verify
+the parsed activation result.
+
+Required properties:
+
+| Property            | Required value                                                                                           |
+|---------------------|----------------------------------------------------------------------------------------------------------|
+| `clientNumber`      | Integer client number used to create the `DeviceRegistration` for the activation request.                |
+| `title`             | Expected newspaper title returned by the activation response.                                            |
+| `issue`             | Expected issue identifier returned by the activation response.                                           |
+| `urlExpirationTime` | Expected URL expiration timestamp in ISO-8601 local date-time format, for example `2026-07-02T23:59:59`. |
+| `downloadUrl`       | Expected first download URL returned by the activation response.                                         |
+| `encryptionKey`     | Base64-encoded encryption key expected in the parsed `NewspaperIssue`.                                   |
+
+Example:
+
+```properties
+clientNumber=-1765963002
+title=Brain Games
+issue=sfdy2019021000000000001001
+urlExpirationTime=2026-07-02T23:59:59
+downloadUrl=http://cdn.ndcds.net/cds/files?...
+encryptionKey=kSa2OBeotiMF9wR7bDo69g==
+```
+
+The test assumes both files exist. If either the `.activation` file or the `.properties` file is missing, the corresponding parameterized test invocation is
+skipped.
