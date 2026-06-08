@@ -5,7 +5,7 @@ package it.kapfer.librepress.server;
  * newspaper issue to the device.
  *
  * @param messageId  the ID of the message, can be used to delete the message
- * @param title      Title of the newspaper to be downloaded
+ * @param title      title of the newspaper to be downloaded
  * @param issueId    internal ID of the individual issue that should be downloaded
  * @param licenseUrl URL to the activation endpoint that must be called to activate and download the newspaper issue
  */

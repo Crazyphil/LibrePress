@@ -110,4 +110,16 @@ class RequestExecutor {
             throw new HttpException("Unexpected response type: " + response.getClass().getSimpleName() + " (expected " + responseType.getSimpleName() + ")");
         }
     }
+
+    public CompletableFuture<ActivationResponse> executeActivationRequest(String activationUrl, String activationNumber, int clientNumber) {
+        String actualUrl = activationUrl + "&activationNumber=" + activationNumber + "&ClientNumber=" + clientNumber;
+        HttpRequest httpRequest = prepareHttpRequest(URI.create(actualUrl))
+                .GET()
+                .build();
+
+        return client.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofInputStream())
+                .thenApply(this::checkStatusCode)
+                .thenApply(HttpResponse::body)
+                .thenApply(b -> parseResponse(b, ActivationResponse.class));
+    }
 }
