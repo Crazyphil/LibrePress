@@ -23,12 +23,13 @@ file, the individual properties can also be provided as environment variables, m
 
 Required properties:
 
-| Property          | Environment variable           | Required value                                                 |
-|-------------------|--------------------------------|----------------------------------------------------------------|
-| `username`        | `CREDENTIALS_USERNAME`         | Username of the account to authenticate to                     |
-| `password`        | `CREDENTIALS_PASSWORD`         | Password of the account to authenticate to                     |
-| `activationToken` | `CREDENTIALS_ACTIVATION_TOKEN` | Activation token returned by the server on device registration |
-| `clientId`        | `CREDENTIALS_CLIENT_ID`        | Client ID used by the client to register the device            |
+| Property          | Environment variable           | Required value                                                                       |
+|-------------------|--------------------------------|--------------------------------------------------------------------------------------|
+| `username`        | `CREDENTIALS_USERNAME`         | Username of the account to authenticate to                                           |
+| `password`        | `CREDENTIALS_PASSWORD`         | Password of the account to authenticate to                                           |
+| `activationToken` | `CREDENTIALS_ACTIVATION_TOKEN` | Activation token returned by the server on device registration                       |
+| `clientId`        | `CREDENTIALS_CLIENT_ID`        | Client ID used by the client to register the device                                  |
+| `licenseUrl`      | `CREDENTIALS_LICENSE_URL`      | Activation URL for a newspaper issue that was already activated for the client above |
 
 ## `.activation` files
 

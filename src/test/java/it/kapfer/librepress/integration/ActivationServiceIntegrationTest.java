@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assumptions.assumeFalse;
 class ActivationServiceIntegrationTest {
     private static final DeviceRegistration VALID_REGISTRATION = SecretsProvider.get().getDeviceRegistration();
     private static final DeviceRegistration INVALID_REGISTRATION = new DeviceRegistration("1d35fd1b-6535-438e-87f2-eebb213ecb2c", 987654321);
-    private static final String LICENSE_URL = "https://secure.example.com/activate?issue=sfdy2019021000000000001001&certificateid=123456789";
+    private static final String LICENSE_URL = SecretsProvider.get().getLicenseUrl();
     private static final NewspaperActivation NEWSPAPER_ACTIVATION = new NewspaperActivation(1234, "Brain Games", "sfdy2019021000000000001001", LICENSE_URL);
 
     private ActivationService activationService;

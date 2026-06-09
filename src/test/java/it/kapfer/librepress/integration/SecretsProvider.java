@@ -68,4 +68,12 @@ class SecretsProvider {
         }
         return clientId != null ? Integer.parseInt(clientId) : 0;
     }
+
+    public String getLicenseUrl() {
+        String licenseUrl = secrets.getProperty("licenseUrl");
+        if (licenseUrl == null) {
+            licenseUrl = System.getenv("CREDENTIALS_LICENSE_URL");
+        }
+        return licenseUrl;
+    }
 }
