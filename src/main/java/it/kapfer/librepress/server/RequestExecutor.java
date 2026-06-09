@@ -74,7 +74,7 @@ class RequestExecutor {
                 .uri(url)
                 .timeout(Duration.ofMinutes(1))
                 .header("Content-Type", "text/xml; charset=utf-8")
-                .header("Accept", "txt/xml")
+                .header("Accept", "text/xml")
                 .header("User-Agent", Constants.APPLICATION_STRING);
     }
 

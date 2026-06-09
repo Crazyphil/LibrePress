@@ -101,7 +101,7 @@ class RequestExecutorTest {
         assertEquals("https://secure.newspaperdirect.com/epaper/services/DeliveryQueue.ashx", httpRequest.uri().toString());
         assertEquals(Duration.ofMinutes(1), httpRequest.timeout().orElseThrow());
         assertEquals("text/xml; charset=utf-8", httpRequest.headers().firstValue("Content-Type").orElseThrow());
-        assertEquals("txt/xml", httpRequest.headers().firstValue("Accept").orElseThrow());
+        assertEquals("text/xml", httpRequest.headers().firstValue("Accept").orElseThrow());
         assertEquals(Constants.APPLICATION_STRING, httpRequest.headers().firstValue("User-Agent").orElseThrow());
 
         String body = bodyAsString(httpRequest);

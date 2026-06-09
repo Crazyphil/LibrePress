@@ -15,7 +15,7 @@ public class NewspaperReader {
     private final PDDocument document;
 
     /**
-     * Creates a new NewspaperLiberator to open a PDF file.
+     * Creates a new NewspaperReader to open a PDF file.
      *
      * @param pdfStream     input stream containing the encrypted PDF
      * @param encryptionKey the 16-byte encryption key from the activation certificate
@@ -35,7 +35,7 @@ public class NewspaperReader {
     }
 
     /**
-     * Creates a new NewspaperLiberator to open a PDF file.
+     * Creates a new NewspaperReader to open a PDF file.
      *
      * @param pdfFile       the encrypted PDF file
      * @param encryptionKey the 16-byte encryption key from the activation certificate
