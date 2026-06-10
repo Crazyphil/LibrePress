@@ -1,9 +1,13 @@
 package it.kapfer.librepress.integration;
 
+import it.kapfer.librepress.drm.EncryptionKeyProvider;
 import it.kapfer.librepress.integration.httpclient.DelegatingHttpClient;
 import it.kapfer.librepress.integration.httpclient.FixedResponseHttpClient;
+import it.kapfer.librepress.pdf.NewspaperReader;
 import it.kapfer.librepress.server.*;
 import it.kapfer.librepress.server.exception.NewspaperActivationException;
+import it.kapfer.librepress.server.xml.ActivationResponse;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -177,6 +181,39 @@ class ActivationServiceIntegrationTest {
             for (int i = 0; i < expected.length; i++) {
                 assertEquals(expected[i], actual[i], "Arrays differ at index " + i);
             }
+        }
+    }
+
+    @Nested
+    class DownloadNewspaper {
+        private final XmlMapper xmlMapper = new XmlMapper();
+
+        @ParameterizedTest
+        @ValueSource(strings = {"brain-games", "guardian-weekly-2021-30"})
+        void testRealDownload(String testParameterFilePrefix) throws IOException {
+            try (InputStream propertiesFile = getClass().getResourceAsStream(testParameterFilePrefix + ".properties")) {
+                try (InputStream activationFile = getClass().getResourceAsStream(testParameterFilePrefix + ".activation")) {
+                    assumeFalse(propertiesFile == null, "Properties file not found in resources");
+                    assumeFalse(activationFile == null, "Activation file not found in resources");
+
+                    Properties properties = new Properties();
+                    properties.load(propertiesFile);
+
+                    ActivationResponse response = xmlMapper.readValue(activationFile, ActivationResponse.class);
+                    EncryptionKeyProvider encryptionKeyProvider = new EncryptionKeyProvider(response.certificate, Integer.parseInt(properties.getProperty("clientNumber")), null, null);
+                    NewspaperIssue newspaperIssue = new NewspaperIssue(response.issue, response.documentInfo.title, response.urlExpirationTime, response.downloadUrls, encryptionKeyProvider.getEncryptionKey());
+
+                    executeRealDownload(newspaperIssue);
+                }
+            }
+        }
+
+        void executeRealDownload(NewspaperIssue newspaperIssue) {
+            NewspaperReader newspaperReader = activationService.openNewspaper(newspaperIssue).join();
+
+            PDDocument document = newspaperReader.getDocument();
+            assertNotNull(document);
+            assertNotNull(document.getDocumentInformation().getCreationDate());
         }
     }
 }

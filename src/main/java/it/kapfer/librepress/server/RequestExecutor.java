@@ -19,10 +19,14 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 class RequestExecutor {
     private static final URI ENDPOINT_URL = URI.create("https://secure.newspaperdirect.com/epaper/services/DeliveryQueue.ashx");
+    private static final String MIME_TYPE_XML = "text/xml";
+    private static final String MIME_TYPE_PDF = "application/pdf";
 
     private final HttpClient client;
     private final XmlMapper xmlMapper;
@@ -73,8 +77,8 @@ class RequestExecutor {
         return HttpRequest.newBuilder()
                 .uri(url)
                 .timeout(Duration.ofMinutes(1))
-                .header("Content-Type", "text/xml; charset=utf-8")
-                .header("Accept", "text/xml")
+                .header("Content-Type", MIME_TYPE_XML + "; charset=utf-8")
+                .header("Accept", MIME_TYPE_XML)
                 .header("User-Agent", Constants.APPLICATION_STRING);
     }
 
@@ -101,7 +105,9 @@ class RequestExecutor {
 
     private <T extends Response> T mapToResponse(Class<T> responseType, Response response) {
         if (responseType.isInstance(response)) {
-            return (T) response;
+            @SuppressWarnings({"unchecked"})
+            T castedResponse = (T) response;
+            return castedResponse;
         } else if (response instanceof ErrorResponse errorResponse) {
             throw new HttpException(errorResponse);
         } else if (response instanceof EmptyResponse) {
@@ -121,5 +127,30 @@ class RequestExecutor {
                 .thenApply(this::checkStatusCode)
                 .thenApply(HttpResponse::body)
                 .thenApply(b -> parseResponse(b, ActivationResponse.class));
+    }
+
+    public CompletableFuture<InputStream> executeDownloadRequest(List<String> downloadUrls) {
+        if (downloadUrls.isEmpty()) {
+            return CompletableFuture.failedFuture(new HttpException("No download URLs available"));
+        }
+
+        List<String> remainingMirrors = new LinkedList<>(downloadUrls);
+        String mirrorToTry = remainingMirrors.removeFirst();
+
+        HttpRequest httpRequest = prepareHttpRequest(URI.create(mirrorToTry))
+                .setHeader("Content-Type", MIME_TYPE_PDF)
+                .setHeader("Accept", MIME_TYPE_PDF)
+                .GET()
+                .build();
+
+        return client.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofInputStream())
+                .thenApply(this::checkStatusCode)
+                .thenApply(HttpResponse::body)
+                .exceptionallyCompose(e -> {
+                    if (remainingMirrors.isEmpty()) {
+                        return CompletableFuture.failedFuture(new HttpException("Downloading from all mirrors failed, see cause for last error", e));
+                    }
+                    return executeDownloadRequest(remainingMirrors);
+                });
     }
 }

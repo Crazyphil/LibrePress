@@ -7,6 +7,7 @@ import it.kapfer.librepress.server.xml.authentication.UsernamePasswordAuthentica
 import it.kapfer.librepress.server.xml.request.GetServicesRequest;
 import it.kapfer.librepress.server.xml.response.GetServicesResponse;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -28,6 +29,7 @@ import java.net.http.HttpResponse.BodyHandler;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Flow;
@@ -228,6 +230,62 @@ class RequestExecutorTest {
                 .disable(XmlWriteFeature.WRITE_NULLS_AS_XSI_NIL)
                 .changeDefaultPropertyInclusion(v -> JsonInclude.Value.ALL_NON_NULL)
                 .build();
+    }
+
+    @Nested
+    class ExecuteDownloadRequest {
+
+        @Test
+        void downloadsWithCorrectHeadersAndReturnsBody() {
+            InputStream expectedBody = inputStream("pdf-content");
+            when(httpResponse.statusCode()).thenReturn(200);
+            when(httpResponse.body()).thenReturn(expectedBody);
+            //noinspection unchecked
+            doReturn(CompletableFuture.completedFuture(httpResponse))
+                    .when(httpClient).sendAsync(any(HttpRequest.class), any(BodyHandler.class));
+
+            InputStream result = requestExecutor.executeDownloadRequest(
+                    List.of("http://mirror.example.com/file.pdf")).join();
+
+            assertSame(expectedBody, result);
+            verify(httpClient).sendAsync(httpRequestCaptor.capture(), any());
+            HttpRequest request = httpRequestCaptor.getValue();
+            assertEquals("GET", request.method());
+            assertEquals("http://mirror.example.com/file.pdf", request.uri().toString());
+            assertEquals("application/pdf", request.headers().firstValue("Accept").orElseThrow());
+            assertEquals(Constants.APPLICATION_STRING, request.headers().firstValue("User-Agent").orElseThrow());
+        }
+
+        @Test
+        void retriesSecondUrlWhenFirstFails() {
+            InputStream expectedBody = inputStream("pdf-content");
+            when(httpResponse.statusCode()).thenReturn(200);
+            when(httpResponse.body()).thenReturn(expectedBody);
+
+            // First call fails, second succeeds
+            //noinspection unchecked
+            doReturn(
+                    CompletableFuture.failedFuture(new RuntimeException("first mirror down")),
+                    CompletableFuture.completedFuture(httpResponse))
+                    .when(httpClient).sendAsync(any(HttpRequest.class), any(BodyHandler.class));
+
+            InputStream result = requestExecutor.executeDownloadRequest(
+                    List.of("http://mirror1.example.com/file.pdf", "http://mirror2.example.com/file.pdf")).join();
+
+            assertSame(expectedBody, result);
+            verify(httpClient, times(2)).sendAsync(httpRequestCaptor.capture(), any());
+            var allRequests = httpRequestCaptor.getAllValues();
+            assertEquals("http://mirror1.example.com/file.pdf", allRequests.get(0).uri().toString());
+            assertEquals("http://mirror2.example.com/file.pdf", allRequests.get(1).uri().toString());
+        }
+
+        @Test
+        void failsWithHttpExceptionWhenUrlListIsEmpty() {
+            var downloadCall = requestExecutor.executeDownloadRequest(List.of());
+            CompletionException e = assertThrows(CompletionException.class, downloadCall::join);
+            assertInstanceOf(HttpException.class, e.getCause());
+            assertEquals("No download URLs available", e.getCause().getMessage());
+        }
     }
 
     private static String bodyAsString(HttpRequest httpRequest) throws Exception {

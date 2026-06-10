@@ -5,6 +5,8 @@ import it.kapfer.librepress.pdf.NewspaperReader;
 import it.kapfer.librepress.server.exception.NewspaperActivationException;
 import it.kapfer.librepress.server.xml.ActivationResponse;
 
+import java.io.*;
+import java.nio.file.Files;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -55,5 +57,57 @@ public class ActivationService {
                 response.urlExpirationTime,
                 response.downloadUrls,
                 encryptionKeyProvider.getEncryptionKey());
+    }
+
+    /**
+     * Opens an activated newspaper issue for reading by automatically downloading it from the download URLs given in the object and returning a newspaper
+     * reader handling the PDF file.
+     * <p>
+     * This method always directly operates on the download stream from the remote server, no caching takes place.
+     *
+     * @param newspaperIssue the newspaper issue to download and open
+     * @return a newspaper reader for the downloaded PDF file
+     */
+    public CompletableFuture<NewspaperReader> openNewspaper(NewspaperIssue newspaperIssue) {
+        return requestExecutor.executeDownloadRequest(newspaperIssue.downloadUrls())
+                .thenApply(is -> new NewspaperReader(is, newspaperIssue.encryptionKey()));
+    }
+
+    /**
+     * Opens an activated newspaper issue for reading by automatically downloading it from the download URLs given in the object and returning a newspaper
+     * reader handling the PDF file.
+     * <p>
+     * This method first downloads the PDF file to the specified output file and then opens it from there. If the file already exists, all contents are
+     * overwritten.
+     *
+     * @param newspaperIssue the newspaper issue to download and open
+     * @param outputFile     file to which the downloaded PDF is written
+     * @return a newspaper reader for the downloaded PDF file
+     */
+    public CompletableFuture<NewspaperReader> openNewspaper(NewspaperIssue newspaperIssue, File outputFile) {
+        if (outputFile.exists() && !outputFile.isFile()) {
+            throw new IllegalArgumentException("Output file must not be a directory");
+        }
+
+        return requestExecutor.executeDownloadRequest(newspaperIssue.downloadUrls())
+                .thenApply(is -> writeInputStreamToFile(is, outputFile))
+                .thenApply(f -> readFile(f, newspaperIssue));
+    }
+
+    private File writeInputStreamToFile(InputStream inputStream, File outputFile) {
+        try (inputStream; var os = Files.newOutputStream(outputFile.toPath())) {
+            inputStream.transferTo(os);
+            return outputFile;
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    private NewspaperReader readFile(File inputFile, NewspaperIssue newspaperIssue) {
+        try {
+            return new NewspaperReader(inputFile, newspaperIssue.encryptionKey());
+        } catch (FileNotFoundException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 }

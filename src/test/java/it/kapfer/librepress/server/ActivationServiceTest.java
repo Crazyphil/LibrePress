@@ -1,6 +1,7 @@
 package it.kapfer.librepress.server;
 
 import it.kapfer.librepress.drm.EncryptionKeyProvider;
+import it.kapfer.librepress.pdf.NewspaperReader;
 import it.kapfer.librepress.server.exception.NewspaperActivationException;
 import it.kapfer.librepress.server.xml.ActivationResponse;
 import it.kapfer.librepress.server.xml.ActivationResponse.DocumentInfo;
@@ -14,6 +15,9 @@ import org.mockito.Mock;
 import org.mockito.MockedConstruction;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -154,6 +158,60 @@ class ActivationServiceTest {
             var response = new ActivationResponse();
             response.statusCode = statusCode;
             return response;
+        }
+    }
+
+    @Nested
+    class OpenNewspaper {
+        private static final NewspaperIssue NEWSPAPER_ISSUE = new NewspaperIssue(
+                "test-issue", "Test Newspaper", LocalDateTime.now(),
+                List.of("http://example.com/file.pdf"),
+                new byte[]{1, 2, 3, 4});
+
+        @Test
+        void delegatesToExecutorAndConstructsReader() {
+            when(requestExecutor.executeDownloadRequest(NEWSPAPER_ISSUE.downloadUrls()))
+                    .thenReturn(CompletableFuture.completedFuture(new ByteArrayInputStream(new byte[0])));
+
+            try (MockedConstruction<NewspaperReader> mocked = mockConstruction(NewspaperReader.class)) {
+                NewspaperReader reader = activationService.openNewspaper(NEWSPAPER_ISSUE).join();
+                assertNotNull(reader);
+                assertEquals(1, mocked.constructed().size());
+            }
+        }
+
+        @Test
+        void delegatesDownloadAndWritesToFile() throws Exception {
+            File tempFile = File.createTempFile("test", ".pdf");
+            tempFile.deleteOnExit();
+
+            byte[] pdfContent = {1, 2, 3, 4};
+            when(requestExecutor.executeDownloadRequest(NEWSPAPER_ISSUE.downloadUrls()))
+                    .thenReturn(CompletableFuture.completedFuture(new ByteArrayInputStream(pdfContent)));
+
+            try (MockedConstruction<NewspaperReader> mocked = mockConstruction(NewspaperReader.class)) {
+                NewspaperReader reader = activationService.openNewspaper(NEWSPAPER_ISSUE, tempFile).join();
+                assertNotNull(reader);
+                assertArrayEquals(pdfContent, Files.readAllBytes(tempFile.toPath()));
+                assertEquals(1, mocked.constructed().size());
+            }
+        }
+
+        @Test
+        void failsWhenExecutorFails() {
+            when(requestExecutor.executeDownloadRequest(NEWSPAPER_ISSUE.downloadUrls()))
+                    .thenReturn(CompletableFuture.failedFuture(new RuntimeException("download failed")));
+
+            var call = activationService.openNewspaper(NEWSPAPER_ISSUE);
+            CompletionException e = assertThrows(CompletionException.class, call::join);
+            assertEquals("download failed", e.getCause().getMessage());
+        }
+
+        @Test
+        void throwsWhenOutputFileIsDirectory() {
+            File dir = new File(System.getProperty("java.io.tmpdir"));
+            assertThrows(IllegalArgumentException.class,
+                    () -> activationService.openNewspaper(NEWSPAPER_ISSUE, dir));
         }
     }
 }
