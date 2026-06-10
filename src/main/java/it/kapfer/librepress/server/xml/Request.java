@@ -1,6 +1,6 @@
 package it.kapfer.librepress.server.xml;
 
-import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 public abstract class Request {
     @JacksonXmlProperty(isAttribute = true)

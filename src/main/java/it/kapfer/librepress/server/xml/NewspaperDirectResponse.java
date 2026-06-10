@@ -1,7 +1,7 @@
 package it.kapfer.librepress.server.xml;
 
 import com.fasterxml.jackson.annotation.JsonRootName;
-import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 /**
  * This class is a Jackson object representation of the {@code nd} element in this XML structure:
@@ -36,6 +36,7 @@ public class NewspaperDirectResponse {
 
     public Response response;
 
+    @JacksonXmlProperty(localName = "user-profile")
     public UserProfile userProfile;
 
     public Response getResponse() {
@@ -67,7 +68,7 @@ public class NewspaperDirectResponse {
 
         @JacksonXmlProperty(localName = "logon-name")
         public String logonName;
-        
+
         @JacksonXmlProperty(localName = "account-number")
         public String accountNumber;
     }

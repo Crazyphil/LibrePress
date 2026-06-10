@@ -1,5 +1,6 @@
 package it.kapfer.librepress.integration;
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import it.kapfer.librepress.drm.EncryptionKeyProvider;
 import it.kapfer.librepress.integration.httpclient.DelegatingHttpClient;
 import it.kapfer.librepress.integration.httpclient.FixedResponseHttpClient;
@@ -7,13 +8,13 @@ import it.kapfer.librepress.pdf.NewspaperReader;
 import it.kapfer.librepress.server.*;
 import it.kapfer.librepress.server.exception.NewspaperActivationException;
 import it.kapfer.librepress.server.xml.ActivationResponse;
+import it.kapfer.librepress.server.xml.jackson.XmlMapperProvider;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import tools.jackson.dataformat.xml.XmlMapper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -139,7 +140,7 @@ class ActivationServiceIntegrationTest {
         @BeforeEach
         void beforeEach() {
             httpClientDelegate = new DelegatingHttpClient(null);
-            MockRequestExecutor mockRequestExecutor = new MockRequestExecutor(httpClientDelegate, XmlMapper.shared());
+            MockRequestExecutor mockRequestExecutor = new MockRequestExecutor(httpClientDelegate, XmlMapperProvider.createXmlMapper());
             activationService = ActivationServiceTestInitializer.withCustomRequestExecutor(mockRequestExecutor);
         }
 
@@ -186,7 +187,7 @@ class ActivationServiceIntegrationTest {
 
     @Nested
     class DownloadNewspaper {
-        private final XmlMapper xmlMapper = new XmlMapper();
+        private final XmlMapper xmlMapper = XmlMapperProvider.createXmlMapper();
 
         @ParameterizedTest
         @ValueSource(strings = {"brain-games", "guardian-weekly-2021-30"})

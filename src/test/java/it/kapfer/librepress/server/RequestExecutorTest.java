@@ -1,9 +1,11 @@
 package it.kapfer.librepress.server;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import it.kapfer.librepress.server.exception.HttpException;
 import it.kapfer.librepress.server.xml.Response;
 import it.kapfer.librepress.server.xml.authentication.UsernamePasswordAuthentication;
+import it.kapfer.librepress.server.xml.jackson.XmlMapperProvider;
 import it.kapfer.librepress.server.xml.request.GetServicesRequest;
 import it.kapfer.librepress.server.xml.response.GetServicesResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,10 +16,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.SerializationFeature;
-import tools.jackson.dataformat.xml.XmlMapper;
-import tools.jackson.dataformat.xml.XmlWriteFeature;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -56,7 +54,7 @@ class RequestExecutorTest {
 
     @BeforeEach
     void setUp() {
-        requestExecutor = new RequestExecutor(httpClient, createXmlMapper());
+        requestExecutor = new RequestExecutor(httpClient, XmlMapperProvider.createXmlMapper());
     }
 
     @Test
@@ -148,7 +146,7 @@ class RequestExecutorTest {
     }
 
     @Test
-    void failsWhenRequestCannotBeSerialized() {
+    void failsWhenRequestCannotBeSerialized() throws JsonProcessingException {
         XmlMapper xmlMapper = mock(XmlMapper.class);
         when(xmlMapper.writeValueAsString(any())).thenThrow(new TestJacksonException("boom"));
         requestExecutor = new RequestExecutor(httpClient, xmlMapper);
@@ -193,16 +191,6 @@ class RequestExecutorTest {
 
     private static ByteArrayInputStream inputStream(String value) {
         return new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8));
-    }
-
-    private static XmlMapper createXmlMapper() {
-        return XmlMapper.builder()
-                .enable(SerializationFeature.INDENT_OUTPUT)
-                .enable(XmlWriteFeature.WRITE_XML_DECLARATION)
-                .disable(XmlWriteFeature.WRITE_STANDALONE_YES_TO_XML_DECLARATION)
-                .disable(XmlWriteFeature.WRITE_NULLS_AS_XSI_NIL)
-                .changeDefaultPropertyInclusion(v -> JsonInclude.Value.ALL_NON_NULL)
-                .build();
     }
 
     @Nested
@@ -294,7 +282,7 @@ class RequestExecutorTest {
         }
     }
 
-    private static class TestJacksonException extends JacksonException {
+    private static class TestJacksonException extends JsonProcessingException {
         private TestJacksonException(String message) {
             super(message);
         }

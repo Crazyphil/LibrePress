@@ -10,8 +10,9 @@ repositories {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    // Restrict version to Java 11 to ensure compatibility with Android, where Java 11 support started with Android 11 (R) and these versions have a cumulative
-    // distribution of 82.9% of all devices in 2026. Java 17 is only supported from Android 13 (T) up, currently cumulatively distributed at 57.8%.
+    // Restrict version to Java 11 to ensure compatibility with Android, where Java 11 support started with Android 11 (R/30) and these versions have a
+    // cumulative distribution of 82.9% of all devices in 2026. Java 17 is only supported from Android 13 (T/33) up, currently cumulatively distributed at
+    // 57.8%.
     // Available Java versions: https://stackoverflow.com/a/76621845
     // Android version distribution: https://composables.com/android-distribution-chart
     options.release = 11
@@ -19,11 +20,15 @@ tasks.withType(JavaCompile).configureEach {
 
 dependencies {
     implementation 'org.apache.pdfbox:pdfbox:3.0.7'
-    implementation 'tools.jackson.dataformat:jackson-dataformat-xml:3.1.1'
 
-    testImplementation(platform('org.junit:junit-bom:5.14.4'))
-    testImplementation('org.junit.jupiter:junit-jupiter')
-    testRuntimeOnly('org.junit.platform:junit-platform-launcher')
+    implementation platform('com.fasterxml.jackson:jackson-bom:2.22.0')
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+    testImplementation platform('org.junit:junit-bom:5.14.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
     testImplementation 'org.mockito:mockito-junit-jupiter:5.16.1'
 }
 

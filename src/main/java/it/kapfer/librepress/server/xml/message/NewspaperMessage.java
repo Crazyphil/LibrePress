@@ -1,8 +1,8 @@
 package it.kapfer.librepress.server.xml.message;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import it.kapfer.librepress.server.xml.ResponseMessage;
-import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 import java.time.LocalDate;
 
@@ -82,6 +82,9 @@ public class NewspaperMessage extends ResponseMessage {
 
     @JacksonXmlProperty(localName = "smartflow-disabled")
     public Byte smartflowDisabled;
+
+    @JacksonXmlProperty(localName = "replica-disabled")
+    public Byte replicaDisabled;
 
     @JacksonXmlProperty(localName = "bookmarks-restricted")
     public Byte bookmarksRestricted;

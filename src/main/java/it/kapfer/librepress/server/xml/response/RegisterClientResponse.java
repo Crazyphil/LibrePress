@@ -1,8 +1,8 @@
 package it.kapfer.librepress.server.xml.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import it.kapfer.librepress.server.xml.Response;
-import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 /**
  * This class is a Jackson object representation of the {@code response} element in this XML structure:

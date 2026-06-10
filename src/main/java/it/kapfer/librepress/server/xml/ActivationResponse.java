@@ -3,8 +3,8 @@ package it.kapfer.librepress.server.xml;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Feature;
 import com.fasterxml.jackson.annotation.JsonRootName;
-import tools.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
-import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -79,6 +79,14 @@ import java.util.List;
  *   <ThumbnailUrls>
  *     <Url>https://t.prcdn.co/img</Url>
  *   </ThumbnailUrls>
+ *   <SmartLayoutUrls>
+ *     <Url>http://ndcds.trafficmanager.net/cds/files?***</Url>
+ *     <Url>http://ndcds.trafficmanager.net/cds/files?***</Url>
+ *     <Url>http://cds211.ndcds.net/cds/files?***</Url>
+ *     <Url>http://cds212.ndcds.net/cds/files?***</Url>
+ *     <Url>http://cds201.ndcds.net/cds/files?***</Url>
+ *     <Url>http://cds202.ndcds.net/cds/files?***</Url>
+ *   </SmartLayoutUrls>
  *   <ThumbnailUrlsByHeight>
  *     <Url>http://cdn.ndcds.net/cds/files?thumbs%253a***</Url>
  *     <Url>http://cdn.ndcds.net/cds/files?thumbs%253a***</Url>
@@ -109,6 +117,14 @@ import java.util.List;
  *     <Url>http://cds211.ndcds.net/cds/files?thumbs%253a***</Url>
  *     <Url>http://cds202.ndcds.net/cds/files?thumbs%253a***</Url>
  *   </ZoomUrls2>
+ *   <WordIndexUrls>
+ *     <Url>http://ndcds.trafficmanager.net/cds/files?***</Url>
+ *     <Url>http://ndcds.trafficmanager.net/cds/files?***</Url>
+ *     <Url>http://cds211.ndcds.net/cds/files?***</Url>
+ *     <Url>http://cds212.ndcds.net/cds/files?***</Url>
+ *     <Url>http://cds202.ndcds.net/cds/files?***</Url>
+ *     <Url>http://cds201.ndcds.net/cds/files?***</Url>
+ *   </WordIndexUrls>
  * </ActivationResponse>
  * </pre>
  */
@@ -155,15 +171,22 @@ public class ActivationResponse {
     @JacksonXmlElementWrapper(localName = "ThumbnailUrlsByWidth")
     public List<String> thumbnailUrlsByWidth;
 
+    @JacksonXmlElementWrapper(localName = "SmartLayoutUrls")
+    public List<String> smartLayoutUrls;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     public LocalDateTime urlExpirationTime;
 
     public long urlTTL;
+
     @JacksonXmlElementWrapper(localName = "ZoomUrls")
     public List<String> zoomUrls;
 
     @JacksonXmlElementWrapper(localName = "ZoomUrls2")
     public List<String> zoomUrls2;
+
+    @JacksonXmlElementWrapper(localName = "WordIndexUrls")
+    public List<String> wordIndexUrls;
 
     @JsonFormat(with = Feature.ACCEPT_CASE_INSENSITIVE_PROPERTIES)
     public static class DocumentInfo {

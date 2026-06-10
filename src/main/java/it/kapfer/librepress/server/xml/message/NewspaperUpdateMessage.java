@@ -1,6 +1,6 @@
 package it.kapfer.librepress.server.xml.message;
 
-import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 /**
  * This class is a Jackson object representation of the {@code message} element in this XML structure:

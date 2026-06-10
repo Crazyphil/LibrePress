@@ -1,7 +1,7 @@
 package it.kapfer.librepress.server.xml.response;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import it.kapfer.librepress.server.xml.Response;
-import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 /**
  * This class represents an error response for a command that failed to execute (but the HTTP server returned code 200 regardless).

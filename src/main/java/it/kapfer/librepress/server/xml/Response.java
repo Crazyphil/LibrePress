@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.fasterxml.jackson.databind.annotation.JsonTypeResolver;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import it.kapfer.librepress.server.xml.jackson.ResponseTypeResolverBuilder;
 import it.kapfer.librepress.server.xml.response.*;
-import tools.jackson.databind.annotation.JsonTypeResolver;
-import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 @JsonTypeInfo(use = Id.CUSTOM)
 @JsonTypeResolver(ResponseTypeResolverBuilder.class)

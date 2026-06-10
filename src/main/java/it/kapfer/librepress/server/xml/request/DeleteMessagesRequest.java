@@ -1,11 +1,11 @@
 package it.kapfer.librepress.server.xml.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import it.kapfer.librepress.server.xml.Request;
 import it.kapfer.librepress.server.xml.RequestMessage;
 import it.kapfer.librepress.server.xml.authentication.ActivationAuthentication;
-import tools.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
-import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 import java.util.List;
 

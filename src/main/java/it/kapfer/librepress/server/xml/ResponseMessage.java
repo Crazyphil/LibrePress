@@ -6,9 +6,9 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import it.kapfer.librepress.server.xml.message.NewspaperMessage;
 import it.kapfer.librepress.server.xml.message.NewspaperUpdateMessage;
-import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 import java.time.LocalDateTime;
 

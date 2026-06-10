@@ -1,6 +1,6 @@
 package it.kapfer.librepress.server;
 
-import tools.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import java.net.http.HttpClient;
 

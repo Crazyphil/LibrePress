@@ -1,13 +1,14 @@
 package it.kapfer.librepress.server.xml.jackson;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import tools.jackson.databind.DeserializationContext;
-import tools.jackson.databind.JavaType;
-import tools.jackson.databind.jsontype.NamedType;
-import tools.jackson.databind.jsontype.TypeIdResolver;
-import tools.jackson.databind.jsontype.impl.AsDeductionTypeDeserializer;
-import tools.jackson.databind.jsontype.impl.ClassNameIdResolver;
-import tools.jackson.databind.jsontype.impl.StdTypeResolverBuilder;
+import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.jsontype.NamedType;
+import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
+import com.fasterxml.jackson.databind.jsontype.TypeIdResolver;
+import com.fasterxml.jackson.databind.jsontype.impl.AsDeductionTypeDeserializer;
+import com.fasterxml.jackson.databind.jsontype.impl.ClassNameIdResolver;
+import com.fasterxml.jackson.databind.jsontype.impl.StdTypeResolverBuilder;
 
 import java.util.Collection;
 
@@ -17,12 +18,12 @@ import java.util.Collection;
 public class ResponseTypeResolverBuilder extends StdTypeResolverBuilder {
 
     @Override
-    public tools.jackson.databind.jsontype.TypeDeserializer buildTypeDeserializer(DeserializationContext ctxt, JavaType baseType, Collection<NamedType> subtypes) {
+    public TypeDeserializer buildTypeDeserializer(DeserializationConfig config, JavaType baseType, Collection<NamedType> subtypes) {
         if (_idType == JsonTypeInfo.Id.CUSTOM) {
-            TypeIdResolver idRes = ClassNameIdResolver.construct(baseType, subtypes, subTypeValidator(ctxt));
-            JavaType defaultImpl = defineDefaultImpl(ctxt, baseType);
-            return new ResponseTypeDeserializer(ctxt, baseType, idRes, defaultImpl, subtypes);
+            TypeIdResolver idRes = ClassNameIdResolver.construct(baseType, config, subtypes, subTypeValidator(config));
+            JavaType defaultImpl = defineDefaultImpl(config, baseType);
+            return new ResponseTypeDeserializer(baseType, idRes, defaultImpl, config, subtypes);
         }
-        return super.buildTypeDeserializer(ctxt, baseType, subtypes);
+        return super.buildTypeDeserializer(config, baseType, subtypes);
     }
 }
