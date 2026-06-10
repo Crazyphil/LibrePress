@@ -19,8 +19,9 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Collection;
+import java.util.Deque;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 class RequestExecutor {
@@ -108,7 +109,8 @@ class RequestExecutor {
             @SuppressWarnings({"unchecked"})
             T castedResponse = (T) response;
             return castedResponse;
-        } else if (response instanceof ErrorResponse errorResponse) {
+        } else if (response instanceof ErrorResponse) {
+            ErrorResponse errorResponse = (ErrorResponse) response;
             throw new HttpException(errorResponse);
         } else if (response instanceof EmptyResponse) {
             return null;
@@ -129,13 +131,13 @@ class RequestExecutor {
                 .thenApply(b -> parseResponse(b, ActivationResponse.class));
     }
 
-    public CompletableFuture<InputStream> executeDownloadRequest(List<String> downloadUrls) {
+    public CompletableFuture<InputStream> executeDownloadRequest(Collection<String> downloadUrls) {
         if (downloadUrls.isEmpty()) {
             return CompletableFuture.failedFuture(new HttpException("No download URLs available"));
         }
 
-        List<String> remainingMirrors = new LinkedList<>(downloadUrls);
-        String mirrorToTry = remainingMirrors.removeFirst();
+        Deque<String> remainingMirrors = new LinkedList<>(downloadUrls);
+        String mirrorToTry = remainingMirrors.pop();
 
         HttpRequest httpRequest = prepareHttpRequest(URI.create(mirrorToTry))
                 .setHeader("Content-Type", MIME_TYPE_PDF)
@@ -146,11 +148,11 @@ class RequestExecutor {
         return client.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofInputStream())
                 .thenApply(this::checkStatusCode)
                 .thenApply(HttpResponse::body)
-                .exceptionallyCompose(e -> {
+                .exceptionally(e -> {
                     if (remainingMirrors.isEmpty()) {
-                        return CompletableFuture.failedFuture(new HttpException("Downloading from all mirrors failed, see cause for last error", e));
+                        throw new HttpException("Downloading from all mirrors failed, see cause for last error", e);
                     }
-                    return executeDownloadRequest(remainingMirrors);
+                    return executeDownloadRequest(remainingMirrors).join();
                 });
     }
 }

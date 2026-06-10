@@ -67,7 +67,7 @@ class MessageServiceTest {
             List<NewspaperActivation> result = messageService.getPushedNewspapers(REGISTRATION).join();
 
             assertEquals(1, result.size());
-            NewspaperActivation request = result.getFirst();
+            NewspaperActivation request = result.get(0);
             assertEquals(newspaperMessage.title, request.title());
             assertEquals(newspaperMessage.issueId, request.issueId());
             assertEquals(newspaperMessage.getLicenseUrl, request.licenseUrl());
@@ -92,7 +92,7 @@ class MessageServiceTest {
             List<NewspaperActivation> result = messageService.getPushedNewspapers(REGISTRATION).join();
 
             assertEquals(1, result.size());
-            assertEquals("Daily News", result.getFirst().title());
+            assertEquals("Daily News", result.get(0).title());
         }
 
         @Test

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nd version="1.0">
+	<versions>
+		<required-version>5.0.8.503</required-version>
+		<latest-version>6.20.1118</latest-version>
+	</versions>
+	<response id="0">
+		<service-name display-service-name="PressReader">PressDisplay.com</service-name>
+	</response>
+</nd>

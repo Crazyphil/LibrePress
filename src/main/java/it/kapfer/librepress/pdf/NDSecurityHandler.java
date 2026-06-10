@@ -64,9 +64,10 @@ public class NDSecurityHandler extends SecurityHandler<NDProtectionPolicy> {
         if (encryption.getVersion() != 2) {
             throw new IOException("Unsupported encryption version " + encryption.getVersion() + ", only version 2 is supported");
         }
-        if (!(decryptionMaterial instanceof StandardDecryptionMaterial standardDecryptionMaterial)) {
+        if (!(decryptionMaterial instanceof StandardDecryptionMaterial)) {
             throw new IOException("Decryption material is not compatible with the document");
         }
+        StandardDecryptionMaterial standardDecryptionMaterial = (StandardDecryptionMaterial) decryptionMaterial;
         String password = standardDecryptionMaterial.getPassword();
         if (password == null || password.isEmpty()) {
             throw new IOException("Encryption key (password) is required");

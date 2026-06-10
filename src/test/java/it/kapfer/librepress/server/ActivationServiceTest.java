@@ -34,6 +34,7 @@ class ActivationServiceTest {
     private static final DeviceRegistration REGISTRATION = new DeviceRegistration("deadbeef-15f2-4681-aa47-06d1521bf4ff", 1234567890);
     private static final NewspaperActivation ACTIVATION = new NewspaperActivation(
             123, "Brain Games", "sfdy2019021000000000001001", "https://secure.example.com/activate?issue=sfdy2019021000000000001001&certificateid=12345678");
+    private static final NewspaperIssue NEWSPAPER_ISSUE = new NewspaperIssue("test-issue", "Test Newspaper", LocalDateTime.now(), List.of("http://example.com/file.pdf"), new byte[]{1, 2, 3, 4});
 
     @Mock
     private RequestExecutor requestExecutor;
@@ -163,11 +164,6 @@ class ActivationServiceTest {
 
     @Nested
     class OpenNewspaper {
-        private static final NewspaperIssue NEWSPAPER_ISSUE = new NewspaperIssue(
-                "test-issue", "Test Newspaper", LocalDateTime.now(),
-                List.of("http://example.com/file.pdf"),
-                new byte[]{1, 2, 3, 4});
-
         @Test
         void delegatesToExecutorAndConstructsReader() {
             when(requestExecutor.executeDownloadRequest(NEWSPAPER_ISSUE.downloadUrls()))

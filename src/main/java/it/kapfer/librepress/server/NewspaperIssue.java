@@ -10,14 +10,66 @@ import java.util.Objects;
 /**
  * A newspaper issue that has been activated. Contains all necessary information to download the newspaper issue from the server and open it using the
  * {@link NewspaperReader}.
- *
- * @param issue             internal ID of the individual issue that was activated
- * @param title             title of the newspaper to be downloaded
- * @param urlExpirationTime the time after which the download URLs are no longer valid
- * @param downloadUrls      mirror URLs to download the newspaper issue from (each URL points to the identical file). The URLs are valid until the expiration time.
- * @param encryptionKey     the encryption key required to open the newspaper issue
  */
-public record NewspaperIssue(String issue, String title, LocalDateTime urlExpirationTime, List<String> downloadUrls, byte[] encryptionKey) {
+public class NewspaperIssue {
+    private final String issue;
+    private final String title;
+    private final LocalDateTime urlExpirationTime;
+    private final List<String> downloadUrls;
+    private final byte[] encryptionKey;
+
+    /**
+     * Creates a new newspaper issue object.
+     *
+     * @param issue             internal ID of the individual issue that was activated
+     * @param title             title of the newspaper to be downloaded
+     * @param urlExpirationTime the time after which the download URLs are no longer valid
+     * @param downloadUrls      mirror URLs to download the newspaper issue from (each URL points to the identical file). The URLs are valid until the expiration time.
+     * @param encryptionKey     the encryption key required to open the newspaper issue
+     */
+    public NewspaperIssue(String issue, String title, LocalDateTime urlExpirationTime, List<String> downloadUrls, byte[] encryptionKey) {
+        this.issue = issue;
+        this.title = title;
+        this.urlExpirationTime = urlExpirationTime;
+        this.downloadUrls = downloadUrls;
+        this.encryptionKey = encryptionKey;
+    }
+
+    /**
+     * {@return internal ID of the individual issue that was activated}
+     */
+    public String issue() {
+        return issue;
+    }
+
+    /**
+     * {@return title of the newspaper to be downloaded}
+     */
+    public String title() {
+        return title;
+    }
+
+    /**
+     * {@return the time after which the download URLs are no longer valid}
+     */
+    public LocalDateTime urlExpirationTime() {
+        return urlExpirationTime;
+    }
+
+    /**
+     * {@return mirror URLs to download the newspaper issue from (each URL points to the identical file). The URLs are valid until the expiration time.}
+     */
+    public List<String> downloadUrls() {
+        return downloadUrls;
+    }
+
+    /**
+     * {@return the encryption key required to open the newspaper issue}
+     */
+    public byte[] encryptionKey() {
+        return encryptionKey;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

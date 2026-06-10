@@ -119,7 +119,7 @@ class MessageServiceIntegrationTest {
                 .join();
 
         assertEquals(1, newspaperActivations.size());
-        NewspaperActivation newspaperProvider = newspaperActivations.getFirst();
+        NewspaperActivation newspaperProvider = newspaperActivations.get(0);
         assertEquals("Brain Games", newspaperProvider.title());
         assertEquals("sfdy2019021000000000001001", newspaperProvider.issueId());
         assertFalse(newspaperProvider.licenseUrl().isBlank());

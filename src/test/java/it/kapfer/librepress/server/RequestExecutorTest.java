@@ -41,41 +41,9 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RequestExecutorTest {
-    private static final String SUCCESSFUL_GET_SERVICES_RESPONSE = """
-            <?xml version="1.0" encoding="UTF-8"?>
-            <nd version="1.0">
-                <versions>
-                    <required-version>5.0.8.503</required-version>
-                    <latest-version>6.20.1118</latest-version>
-                </versions>
-                <response id="0">
-                    <service-name display-service-name="PressReader">PressDisplay.com</service-name>
-                </response>
-            </nd>
-            """;
-    private static final String ERROR_RESPONSE = """
-            <?xml version="1.0" encoding="UTF-8"?>
-            <nd version="1.0">
-                <versions>
-                    <required-version>5.0.8.503</required-version>
-                    <latest-version>6.20.1118</latest-version>
-                </versions>
-                <response id="0">
-                    <error-code>401</error-code>
-                    <error-message>The login name or password you entered is incorrect</error-message>
-                </response>
-            </nd>
-            """;
-    private static final String EMPTY_RESPONSE = """
-            <?xml version="1.0" encoding="UTF-8"?>
-            <nd version="1.0">
-                <versions>
-                    <required-version>5.0.8.503</required-version>
-                    <latest-version>6.20.1118</latest-version>
-                </versions>
-                <response id="0" />
-            </nd>
-            """;
+    private static final String SUCCESSFUL_RESPONSE_RESOURCE = "RequestExecutorTest_SuccessfulResponse.xml";
+    private static final String ERROR_RESPONSE_RESOURCE = "RequestExecutorTest_ErrorResponse.xml";
+    private static final String EMPTY_RESPONSE_RESOURCE = "RequestExecutorTest_EMPTYResponse.xml";
 
     @Mock
     private HttpClient httpClient;
@@ -93,7 +61,7 @@ class RequestExecutorTest {
 
     @Test
     void sendsExpectedHttpRequest() throws Exception {
-        givenSuccessfulHttpResponse(SUCCESSFUL_GET_SERVICES_RESPONSE);
+        givenSuccessfulHttpResponse(SUCCESSFUL_RESPONSE_RESOURCE);
 
         requestExecutor.executeRequest(getServicesRequest(), GetServicesResponse.class).join();
 
@@ -122,18 +90,18 @@ class RequestExecutorTest {
 
     @Test
     void mapsSuccessfulXmlResponseToExpectedResponseType() {
-        givenSuccessfulHttpResponse(SUCCESSFUL_GET_SERVICES_RESPONSE);
+        givenSuccessfulHttpResponse(SUCCESSFUL_RESPONSE_RESOURCE);
 
         GetServicesResponse response = requestExecutor.executeRequest(getServicesRequest(), GetServicesResponse.class).join();
 
         assertEquals(1, response.services.size());
-        assertEquals("PressDisplay.com", response.services.getFirst().id);
-        assertEquals("PressReader", response.services.getFirst().displayName);
+        assertEquals("PressDisplay.com", response.services.get(0).id);
+        assertEquals("PressReader", response.services.get(0).displayName);
     }
 
     @Test
     void mapsErrorXmlResponseToHttpException() {
-        givenSuccessfulHttpResponse(ERROR_RESPONSE);
+        givenSuccessfulHttpResponse(ERROR_RESPONSE_RESOURCE);
 
         var getServicesCall = requestExecutor.executeRequest(getServicesRequest(), GetServicesResponse.class);
         CompletionException e = assertThrows(CompletionException.class, getServicesCall::join);
@@ -146,7 +114,7 @@ class RequestExecutorTest {
 
     @Test
     void mapsEmptyXmlResponseToNullValue() {
-        givenSuccessfulHttpResponse(EMPTY_RESPONSE);
+        givenSuccessfulHttpResponse(EMPTY_RESPONSE_RESOURCE);
 
         Response response = requestExecutor.executeRequest(getServicesRequest(), GetServicesResponse.class).join();
 
@@ -206,9 +174,14 @@ class RequestExecutorTest {
         assertSame(connectionFailure, e.getCause());
     }
 
-    private void givenSuccessfulHttpResponse(String responseXml) {
+    private void givenSuccessfulHttpResponse(String responseResourceOrString) {
+        InputStream bodyStream = RequestExecutorTest.class.getResourceAsStream(responseResourceOrString);
+        if (bodyStream == null) {
+            bodyStream = inputStream(responseResourceOrString);
+        }
+
         when(httpResponse.statusCode()).thenReturn(200);
-        when(httpResponse.body()).thenReturn(inputStream(responseXml));
+        when(httpResponse.body()).thenReturn(bodyStream);
         //noinspection unchecked
         doReturn(CompletableFuture.completedFuture(httpResponse))
                 .when(httpClient).sendAsync(any(HttpRequest.class), any(BodyHandler.class));

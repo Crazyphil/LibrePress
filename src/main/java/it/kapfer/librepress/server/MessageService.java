@@ -8,8 +8,10 @@ import it.kapfer.librepress.server.xml.request.GetMessagesRequest;
 import it.kapfer.librepress.server.xml.response.EmptyResponse;
 import it.kapfer.librepress.server.xml.response.GetMessagesResponse;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 /**
  * This service handles receiving and deleting messages pushed to a registered device by the NewspaperDirect API.
@@ -59,7 +61,7 @@ public class MessageService {
                 .filter(NewspaperMessage.class::isInstance)
                 .map(NewspaperMessage.class::cast)
                 .map(num -> new NewspaperActivation(num.id, num.title, num.issueId, num.getLicenseUrl))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     /**
@@ -70,14 +72,14 @@ public class MessageService {
      * @return a completable future that finishes without an exception if the operation succeeds. The server doesn't tell whether it actually deleted messages,
      * and only future calls to retrieve messages will reflect the result.
      */
-    public CompletableFuture<Void> deleteMessages(DeviceRegistration deviceRegistration, List<? extends DeletableMessage> messagesToDelete) {
+    public CompletableFuture<Void> deleteMessages(DeviceRegistration deviceRegistration, Collection<? extends DeletableMessage> messagesToDelete) {
         if (messagesToDelete.isEmpty()) {
             return CompletableFuture.completedFuture(null);
         }
 
         List<RequestMessage> messages = messagesToDelete.stream()
                 .map(m -> new RequestMessage(m.messageId()))
-                .toList();
+                .collect(Collectors.toList());
         DeleteMessagesRequest deleteMessagesRequest = new DeleteMessagesRequest(toAuthentication(deviceRegistration), messages);
 
         return requestExecutor.executeRequest(deleteMessagesRequest, EmptyResponse.class)

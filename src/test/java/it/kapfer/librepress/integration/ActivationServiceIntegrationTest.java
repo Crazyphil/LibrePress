@@ -171,7 +171,7 @@ class ActivationServiceIntegrationTest {
             assertEquals(testProperties.getProperty("title"), newspaperIssue.title());
             assertEquals(testProperties.getProperty("issue"), newspaperIssue.issue());
             assertEquals(testProperties.getProperty("issue"), newspaperIssue.issue());
-            assertEquals(testProperties.getProperty("downloadUrl"), newspaperIssue.downloadUrls().getFirst());
+            assertEquals(testProperties.getProperty("downloadUrl"), newspaperIssue.downloadUrls().get(0));
             assertEquals(LocalDateTime.parse(testProperties.getProperty("urlExpirationTime")), newspaperIssue.urlExpirationTime());
             assertArrayEquals(Base64.getDecoder().decode(testProperties.getProperty("encryptionKey")), newspaperIssue.encryptionKey());
         }

@@ -116,37 +116,4 @@ public class DelegatingHttpClient extends HttpClient {
               HttpResponse.PushPromiseHandler<T> pushPromiseHandler) {
         return client.sendAsync(request, responseBodyHandler, pushPromiseHandler);
     }
-
-    @Override
-    public boolean isTerminated() {
-        return client.isTerminated();
-    }
-
-    @Override
-    public void shutdown() {
-        client.shutdown();
-    }
-
-    @Override
-    public void shutdownNow() {
-        client.shutdownNow();
-    }
-
-    @Override
-    public boolean awaitTermination(Duration duration) throws InterruptedException {
-        return client.awaitTermination(duration);
-    }
-
-    @Override
-    public void close() {
-        client.close();
-    }
-
-    /**
-     * Invokes the default implementation of HttpClient::close
-     * Can be invoked by subclasses if necessary.
-     */
-    protected void defaultClose() {
-        super.close();
-    }
 }

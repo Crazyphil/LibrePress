@@ -73,7 +73,7 @@ class DeviceRegistrationServiceIntegrationTest {
                 .join();
 
         assertEquals(1, newspaperProviders.size());
-        NewspaperProvider newspaperProvider = newspaperProviders.getFirst();
+        NewspaperProvider newspaperProvider = newspaperProviders.get(0);
         assertEquals("PressDisplay.com", newspaperProvider.serviceId());
         assertEquals("PressReader", newspaperProvider.displayName());
     }
@@ -129,7 +129,7 @@ class DeviceRegistrationServiceIntegrationTest {
         List<RegisteredDevice> newspaperProviders = deviceRegistrationService.getRegisteredDevices(DEVICE_REGISTRATION).join();
 
         assertFalse(newspaperProviders.isEmpty());
-        assertEquals("Static Test Registration", newspaperProviders.getFirst().clientName());
+        assertEquals("Static Test Registration", newspaperProviders.get(0).clientName());
     }
 
     @Nested
@@ -203,7 +203,7 @@ class DeviceRegistrationServiceIntegrationTest {
             List<NewspaperProvider> newspaperProviders = deviceRegistrationService.getAvailableProviders(VALID_CREDENTIALS).join();
             assertEquals(1, newspaperProviders.size());
 
-            deviceRegistration = deviceRegistrationService.registerDevice(VALID_CREDENTIALS, newspaperProviders.getFirst(), "TestDevice")
+            deviceRegistration = deviceRegistrationService.registerDevice(VALID_CREDENTIALS, newspaperProviders.get(0), "TestDevice")
                     .join();
 
             assertNotNull(deviceRegistration);

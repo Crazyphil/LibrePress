@@ -62,8 +62,8 @@ class DeviceRegistrationServiceTest {
             List<NewspaperProvider> result = service.getAvailableProviders(AUTH).join();
 
             assertEquals(1, result.size());
-            assertEquals("PressDisplay.com", result.getFirst().serviceId());
-            assertEquals("PressReader", result.getFirst().displayName());
+            assertEquals("PressDisplay.com", result.get(0).serviceId());
+            assertEquals("PressReader", result.get(0).displayName());
         }
 
         @Test
@@ -213,7 +213,7 @@ class DeviceRegistrationServiceTest {
             List<RegisteredDevice> result = service.getRegisteredDevices(REGISTRATION).join();
 
             assertEquals(2, result.size());
-            assertEquals(activation1.clientName, result.getFirst().clientName());
+            assertEquals(activation1.clientName, result.get(0).clientName());
             assertEquals(activation1.activationNumber, result.get(0).activationToken());
             assertEquals(activation1.id, result.get(0).deviceId());
             assertEquals(activation2.clientName, result.get(1).clientName());

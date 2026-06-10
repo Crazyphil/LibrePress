@@ -4,6 +4,8 @@ import it.kapfer.librepress.pdf.NewspaperReader;
 import it.kapfer.librepress.server.*;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -32,16 +34,24 @@ public class LibrePress {
      * Registers a new device for the given user's account with the name provided. The returned {@link DeviceRegistration} object can be used to retrieve
      * pushed newspaper issues and activate them for offline reading.
      * <p>
-     * If the user has multiple newspaper providers, the first one is used.
+     * If the user has multiple newspaper providers, the first one is used. If the user has <em>no</em> newspaper providers (which should never occur), {@code
+     * null} is returned instead.
      *
      * @param credentials username and password of the user to authenticate to
      * @param deviceName  display name of the device, visible to the user in their account's device management and when pushing newspapers
-     * @return the device registration, which can be used to retrieve pushed newspaper issues and activate them for offline reading. Store the information in
-     * this object between application runs.
+     * @return the device registration, which can be used to retrieve pushed newspaper issues and activate them for offline reading. If the user has no
+     * newspaper providers available (which should never occur), {@code null} is returned instead. Store the information in this object between application runs.
      */
     public CompletableFuture<DeviceRegistration> registerDevice(Credentials credentials, String deviceName) {
         return deviceRegistrationService.getAvailableProviders(credentials)
-                .thenCompose(np -> deviceRegistrationService.registerDevice(credentials, np.getFirst(), deviceName));
+                .thenCompose(np -> registerForFirstProvider(credentials, deviceName, np));
+    }
+
+    private CompletableFuture<DeviceRegistration> registerForFirstProvider(Credentials credentials, String deviceName, List<NewspaperProvider> newspaperProviders) {
+        if (newspaperProviders.isEmpty()) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return deviceRegistrationService.registerDevice(credentials, newspaperProviders.get(0), deviceName);
     }
 
     /**
@@ -63,7 +73,7 @@ public class LibrePress {
      * @param deviceRegistration the device for which to check for pushed newspapers
      * @return a list of newspaper issues that have been pushed to the device and are available to be downloaded
      */
-    public CompletableFuture<List<NewspaperIssue>> retrievePushedNewspapers(DeviceRegistration deviceRegistration) {
+    public CompletableFuture<Collection<NewspaperIssue>> retrievePushedNewspapers(DeviceRegistration deviceRegistration) {
         return messageService.getPushedNewspapers(deviceRegistration)
                 .thenCompose(na -> activateNewspapers(deviceRegistration, na))
                 .thenApply(na -> deleteActivatedNewspaperMessages(deviceRegistration, na));
@@ -79,9 +89,9 @@ public class LibrePress {
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
     }
 
-    private List<NewspaperIssue> deleteActivatedNewspaperMessages(DeviceRegistration deviceRegistration, Map<NewspaperActivation, NewspaperIssue> activatedNewspapers) {
-        messageService.deleteMessages(deviceRegistration, activatedNewspapers.keySet().stream().toList());
-        return activatedNewspapers.values().stream().toList();
+    private Collection<NewspaperIssue> deleteActivatedNewspaperMessages(DeviceRegistration deviceRegistration, Map<NewspaperActivation, NewspaperIssue> activatedNewspapers) {
+        messageService.deleteMessages(deviceRegistration, new ArrayList<>(activatedNewspapers.keySet()));
+        return activatedNewspapers.values();
     }
 
     /**

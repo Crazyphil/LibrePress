@@ -16,6 +16,7 @@ import it.kapfer.librepress.server.xml.response.RegisterClientResponse;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 /**
  * This service handles registering and deregistering devices within the NewspaperDirect platform. Registered devices can use their registration information
@@ -53,7 +54,7 @@ public class DeviceRegistrationService {
     private List<NewspaperProvider> mapNewspaperProviders(GetServicesResponse response) {
         return response.services.stream()
                 .map(p -> new NewspaperProvider(p.id, p.displayName))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     /**
@@ -95,7 +96,7 @@ public class DeviceRegistrationService {
     private List<RegisteredDevice> mapClientList(GetClientListResponse response) {
         return response.activations.activations.stream()
                 .map(a -> new RegisteredDevice(a.clientName, a.id, a.activationNumber))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     /**
