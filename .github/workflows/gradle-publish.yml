@@ -29,6 +29,12 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
       - name: Build with Gradle
         run: ./gradlew build
+        env:
+          CREDENTIALS_USERNAME: ${{ secrets.CREDENTIALS_USERNAME }}
+          CREDENTIALS_PASSWORD: ${{ secrets.CREDENTIALS_PASSWORD }}
+          CREDENTIALS_ACTIVATION_TOKEN: ${{ secrets.CREDENTIALS_ACTIVATION_TOKEN }}
+          CREDENTIALS_CLIENT_ID: ${{ secrets.CREDENTIALS_CLIENT_ID }}
+          CREDENTIALS_LICENSE_URL: ${{ secrets.CREDENTIALS_LICENSE_URL }}
 
       # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
       # the publishing section of your build.gradle
