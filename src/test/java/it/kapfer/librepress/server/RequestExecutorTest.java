@@ -41,7 +41,7 @@ import static org.mockito.Mockito.*;
 class RequestExecutorTest {
     private static final String SUCCESSFUL_RESPONSE_RESOURCE = "RequestExecutorTest_SuccessfulResponse.xml";
     private static final String ERROR_RESPONSE_RESOURCE = "RequestExecutorTest_ErrorResponse.xml";
-    private static final String EMPTY_RESPONSE_RESOURCE = "RequestExecutorTest_EMPTYResponse.xml";
+    private static final String EMPTY_RESPONSE_RESOURCE = "RequestExecutorTest_EmptyResponse.xml";
 
     @Mock
     private HttpClient httpClient;
