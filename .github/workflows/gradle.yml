@@ -15,6 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      # Required for EnricoMi/publish-unit-test-result-action
+      checks: write
+      pull-requests: write
 
     steps:
       - uses: actions/checkout@v4
