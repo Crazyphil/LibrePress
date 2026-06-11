@@ -130,6 +130,7 @@ import java.util.List;
  */
 @JsonRootName("ActivationResponse")
 @JsonFormat(with = Feature.ACCEPT_CASE_INSENSITIVE_PROPERTIES)
+@SuppressWarnings({"unused", "java:S1104"})
 public class ActivationResponse {
     public String certificate;
 

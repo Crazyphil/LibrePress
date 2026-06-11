@@ -76,7 +76,10 @@ public class ResponseTypeDeserializer extends AsDeductionTypeDeserializer {
             Class<AsDeductionTypeDeserializer> deserializerClass = AsDeductionTypeDeserializer.class;
             Field subtypeFingerprintsField = deserializerClass.getDeclaredField("subtypeFingerprints");
             subtypeFingerprintsField.setAccessible(true);
-            return (Map<BitSet, String>) subtypeFingerprintsField.get(this);
+
+            @SuppressWarnings("unchecked")
+            Map<BitSet, String> subtypeFingerprints = (Map<BitSet, String>) subtypeFingerprintsField.get(this);
+            return subtypeFingerprints;
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new IllegalStateException("Could not reflectively access subtype fingerprints", e);
         }
@@ -87,7 +90,10 @@ public class ResponseTypeDeserializer extends AsDeductionTypeDeserializer {
             Class<AsDeductionTypeDeserializer> deserializerClass = AsDeductionTypeDeserializer.class;
             Field propertyBitIndexField = deserializerClass.getDeclaredField("fieldBitIndex");
             propertyBitIndexField.setAccessible(true);
-            return (Map<String, Integer>) propertyBitIndexField.get(this);
+
+            @SuppressWarnings("unchecked")
+            Map<String, Integer> propertyBitIndex = (Map<String, Integer>) propertyBitIndexField.get(this);
+            return propertyBitIndex;
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new IllegalStateException("Could not reflectively access property bit indexes", e);
         }

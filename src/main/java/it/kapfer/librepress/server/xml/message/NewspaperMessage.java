@@ -47,6 +47,7 @@ import java.time.LocalDate;
  *         </message>
  * </pre>
  */
+@SuppressWarnings({"unused", "java:S1104"})
 public class NewspaperMessage extends ResponseMessage {
     @JacksonXmlProperty(localName = "issue-id")
     public String issueId;

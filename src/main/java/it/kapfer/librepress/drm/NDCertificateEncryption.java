@@ -13,7 +13,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-public class NDCertificateEncryption {
+class NDCertificateEncryption {
     private static final String SECRET_FILE = "ndsecret.bin";
     private static final byte[] SALT = new byte[]{0x1c, (byte) 0xfd, (byte) 0xf5, 0x4e, 0x17, 0x60, 0x09, 0x39};
 
@@ -48,7 +48,9 @@ public class NDCertificateEncryption {
 
     private Cipher getCipher() {
         try {
-            return Cipher.getInstance("AES/CBC/PKCS5Padding");
+            @SuppressWarnings("java:S5542")
+            Cipher aesCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            return aesCipher;
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
             throw new IllegalStateException("The JVM doesn't support the required cryptography (cipher) functionality", e);
         }

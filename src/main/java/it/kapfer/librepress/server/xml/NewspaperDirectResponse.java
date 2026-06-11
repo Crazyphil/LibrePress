@@ -28,6 +28,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
  * </pre>
  */
 @JsonRootName("nd")
+@SuppressWarnings({"unused", "java:S1104"})
 public class NewspaperDirectResponse {
     @JacksonXmlProperty(isAttribute = true)
     public String version;

@@ -26,6 +26,7 @@ import it.kapfer.librepress.server.xml.Response;
  * </response>
  * </pre>
  */
+@SuppressWarnings({"unused", "java:S1104"})
 public class RegisterClientResponse extends Response {
     @JsonInclude
     @JacksonXmlProperty(localName = "activation-number")
