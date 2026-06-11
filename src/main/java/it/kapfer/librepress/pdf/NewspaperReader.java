@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
  * <p>
  * The NDPD encryption uses a custom filter "NDPD:CryptHandler" with version 2, which is handled by the {@link NDSecurityHandler} class.
  */
-public class NewspaperReader {
+public class NewspaperReader implements AutoCloseable {
     private final PDDocument document;
 
     /**
@@ -51,5 +51,15 @@ public class NewspaperReader {
      */
     public PDDocument getDocument() {
         return document;
+    }
+
+    /**
+     * Closes the PDF document.
+     *
+     * @throws IOException if there is an error releasing resources
+     */
+    @Override
+    public void close() throws IOException {
+        document.close();
     }
 }
