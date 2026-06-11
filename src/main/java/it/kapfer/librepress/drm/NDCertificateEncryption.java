@@ -5,8 +5,7 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.InputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -34,15 +33,18 @@ class NDCertificateEncryption {
     }
 
     private byte[] readNDSecret() {
-        Path secretFile = Path.of(SECRET_FILE);
-        try {
-            byte[] secretBytes = Files.readAllBytes(secretFile);
+        try (InputStream ndSecret = NDCertificateEncryption.class.getResourceAsStream(SECRET_FILE)) {
+            if (ndSecret == null) {
+                throw new IOException("Decryption secret resource not found");
+            }
+
+            byte[] secretBytes = ndSecret.readAllBytes();
             if (secretBytes.length != 16) {
-                throw new IOException("Secret file must be exactly 16 bytes long");
+                throw new IOException("Decryption secret resource must be exactly 16 bytes long");
             }
             return secretBytes;
         } catch (IOException e) {
-            throw new IllegalStateException("The secret file " + secretFile.toAbsolutePath() + " could not be read, ensure it exists and has 16 bytes in it");
+            throw new IllegalStateException("The decryption secret could not be read", e);
         }
     }
 

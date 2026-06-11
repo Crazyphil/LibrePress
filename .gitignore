@@ -71,4 +71,3 @@ src/test/resources/it/kapfer/librepress/pdf/*.properties
 src/test/resources/it/kapfer/librepress/integration/*.activation
 src/test/resources/it/kapfer/librepress/integration/*.properties
 src/test/resources/it/kapfer/librepress/integration/credentials.secrets
-ndsecret.bin
