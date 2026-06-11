@@ -76,7 +76,7 @@ class ActivationServiceTest {
         void mapsResponseToNewspaperIssue() {
             var mockEncryptionKey = new byte[]{1, 2, 3, 4};
             try (MockedConstruction<EncryptionKeyProvider> ignored = mockConstruction(EncryptionKeyProvider.class,
-                    (mock, context) -> when(mock.getEncryptionKey()).thenReturn(mockEncryptionKey))) {
+                    (mock, context) -> when(mock.getEncryptionKey(any())).thenReturn(mockEncryptionKey))) {
 
                 var response = createOkResponse();
                 when(requestExecutor.executeActivationRequest(anyString(), anyString(), anyInt()))

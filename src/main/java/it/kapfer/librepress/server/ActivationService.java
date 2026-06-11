@@ -50,13 +50,13 @@ public class ActivationService {
             throw new NewspaperActivationException(response);
         }
 
-        EncryptionKeyProvider encryptionKeyProvider = new EncryptionKeyProvider(response.certificate, deviceRegistration.clientId(), null, null);
+        EncryptionKeyProvider encryptionKeyProvider = new EncryptionKeyProvider(deviceRegistration.clientId(), null);
         return new NewspaperIssue(
                 response.issue,
                 response.documentInfo.title,
                 response.urlExpirationTime,
                 response.downloadUrls,
-                encryptionKeyProvider.getEncryptionKey());
+                encryptionKeyProvider.getEncryptionKey(response.certificate));
     }
 
     /**

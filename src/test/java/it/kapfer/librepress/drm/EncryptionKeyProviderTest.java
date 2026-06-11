@@ -26,8 +26,8 @@ class EncryptionKeyProviderTest {
             String activationPassword = testProperties.getProperty("activationPassword");
             String encodedCertificate = testProperties.getProperty("certificate");
 
-            EncryptionKeyProvider provider = new EncryptionKeyProvider(encodedCertificate, clientNumber, clientAddress, activationPassword);
-            assertNotNull(provider.getEncryptionKey());
+            EncryptionKeyProvider provider = new EncryptionKeyProvider(clientNumber, clientAddress);
+            assertNotNull(provider.getEncryptionKey(encodedCertificate));
         }
     }
 }

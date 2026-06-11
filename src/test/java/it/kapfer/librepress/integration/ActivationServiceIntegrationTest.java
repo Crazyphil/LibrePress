@@ -201,8 +201,12 @@ class ActivationServiceIntegrationTest {
                     properties.load(propertiesFile);
 
                     ActivationResponse response = xmlMapper.readValue(activationFile, ActivationResponse.class);
-                    EncryptionKeyProvider encryptionKeyProvider = new EncryptionKeyProvider(response.certificate, Integer.parseInt(properties.getProperty("clientNumber")), null, null);
-                    NewspaperIssue newspaperIssue = new NewspaperIssue(response.issue, response.documentInfo.title, response.urlExpirationTime, response.downloadUrls, encryptionKeyProvider.getEncryptionKey());
+                    EncryptionKeyProvider encryptionKeyProvider = new EncryptionKeyProvider(Integer.parseInt(properties.getProperty("clientNumber")), null);
+                    NewspaperIssue newspaperIssue = new NewspaperIssue(response.issue,
+                            response.documentInfo.title,
+                            response.urlExpirationTime,
+                            response.downloadUrls,
+                            encryptionKeyProvider.getEncryptionKey(response.certificate));
 
                     executeRealDownload(newspaperIssue);
                 }
