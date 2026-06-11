@@ -34,6 +34,12 @@ jobs:
 
       - name: Build with Gradle Wrapper
         run: ./gradlew build
+        env:
+          CREDENTIALS_USERNAME: ${{ secrets.CREDENTIALS_USERNAME }}
+          CREDENTIALS_PASSWORD: ${{ secrets.CREDENTIALS_PASSWORD }}
+          CREDENTIALS_ACTIVATION_TOKEN: ${{ secrets.CREDENTIALS_ACTIVATION_TOKEN }}
+          CREDENTIALS_CLIENT_ID: ${{ secrets.CREDENTIALS_CLIENT_ID }}
+          CREDENTIALS_LICENSE_URL: ${{ secrets.CREDENTIALS_LICENSE_URL }}
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
